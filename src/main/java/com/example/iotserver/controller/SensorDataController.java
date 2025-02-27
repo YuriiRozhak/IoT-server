@@ -1,7 +1,7 @@
 package com.example.iotserver.controller;
 
 import com.example.iotserver.model.SensorData;
-import com.example.iotserver.repo.SensorDataRepository;
+import com.example.iotserver.repository.SensorDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

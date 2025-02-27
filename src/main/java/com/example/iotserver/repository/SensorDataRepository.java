@@ -1,4 +1,4 @@
-package com.example.iotserver.repo;
+package com.example.iotserver.repository;
 
 import com.example.iotserver.model.SensorData;
 import org.springframework.data.jpa.repository.JpaRepository;

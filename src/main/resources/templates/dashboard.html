@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>IoT Sensor Dashboard</title>
+    <meta http-equiv="refresh" content="5"> <!-- Auto-refresh every 5 seconds -->
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { width: 80%; margin: auto; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid black; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+<h1>IoT Sensor Dashboard</h1>
+<table>
+    <tr>
+        <th>Sensor Type</th>
+        <th>Value</th>
+        <th>Timestamp</th>
+    </tr>
+    <tr th:each="sensor : ${sensorData}">
+        <td th:text="${sensor.sensorType}"></td>
+        <td th:text="${sensor.value}"></td>
+        <td th:text="${sensor.timestamp}"></td>
+    </tr>
+</table>
+</body>
+</html>
