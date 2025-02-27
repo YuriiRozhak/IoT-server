@@ -1,7 +1,12 @@
 package com.example.iotserver.model;
 
+import com.example.iotserver.converter.LocalDateTimeConverter;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "SensorData")
@@ -15,5 +20,9 @@ public class SensorData {
 
     private String sensorType; // "DHT22", "MQ-3", "MQ-135"
     private double value;
-    private String timestamp;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime timestamp;
+
 }
