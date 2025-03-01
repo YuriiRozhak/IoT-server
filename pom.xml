@@ -47,9 +47,6 @@
         </dependency>
 
 
-
-
-
         <!-- Spring Boot DevTools (for development) -->
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools -->
         <dependency>
@@ -77,6 +74,24 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Spring Boot Maven Plugin for Executable JAR -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.3</version> <!-- Adjust to your Spring Boot version -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>

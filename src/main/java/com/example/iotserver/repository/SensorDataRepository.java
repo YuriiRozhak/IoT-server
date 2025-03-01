@@ -13,9 +13,13 @@ import java.util.List;
 public interface SensorDataRepository extends JpaRepository<SensorData, Long> {
 
     @Modifying
-    @Query("DELETE FROM SensorData WHERE id IN (SELECT id FROM SensorData ORDER BY timestamp ASC LIMIT :deleteCount)")
-    void deleteOldestEntries(@Param("deleteCount") int deleteCount);
+    @Query("DELETE FROM SensorData s WHERE s.id IN " +
+            "(SELECT sd.id FROM SensorData sd WHERE sd.sensor.id = :sensorId ORDER BY sd.timestamp ASC LIMIT :deleteCount)")
+    void deleteOldestEntries( @Param("deleteCount") long deleteCount, @Param("sensorId") long sensorId);
 
 
-    List<SensorData> getAllBySensorType(String sensorType);
+
+    List<SensorData> getAllBySensor_Id(Long sensorId);
+
+    long countBySensor_Id(Long sensorId);
 }
