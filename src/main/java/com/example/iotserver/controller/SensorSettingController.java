@@ -1,12 +1,11 @@
 package com.example.iotserver.controller;
 
 import com.example.iotserver.model.SensorSettings;
-import com.example.iotserver.repository.SensorSettingsRepository;
+import com.example.iotserver.service.SensorSettingsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/settings")
@@ -14,28 +13,20 @@ import java.util.Optional;
 public class SensorSettingController {
 
 
-    private final SensorSettingsRepository repository;
-    private final SensorSettingsRepository sensorSettingsRepository;
+    private final SensorSettingsService sensorSettingsService;
 
     @PostMapping("/set")
     public SensorSettings setSettings(@RequestBody SensorSettings sensorSettings) {
-        SensorSettings existing = repository.findBySensor_Id(sensorSettings.getSensor().getId());
-        return Optional.ofNullable(existing).map(ex -> {
-                    ex.setMaxValue(sensorSettings.getMaxValue());
-                    ex.setMinValue(sensorSettings.getMinValue());
-                    ex.setMaxRecordsStored(sensorSettings.getMaxRecordsStored());
-                    return ex;
-                }).map(sensorSettingsRepository::save)
-                .orElseGet(() -> repository.save(sensorSettings));
+        return sensorSettingsService.setSettings(sensorSettings);
     }
 
     @GetMapping("/get/{sensorId}")
     public SensorSettings getSettings(@PathVariable(name = "sensorId") long sensorId) {
-        return repository.findBySensor_Id(sensorId);
+        return sensorSettingsService.getSettings(sensorId);
     }
 
     @GetMapping("/all")
     public List<SensorSettings> getAllSettings() {
-        return repository.findAll();
+        return sensorSettingsService.getAllSettings();
     }
 }

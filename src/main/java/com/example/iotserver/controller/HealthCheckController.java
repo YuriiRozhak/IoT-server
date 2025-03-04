@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/healtcheck")
+@RequestMapping("/alive")
 public class HealthCheckController {
     @GetMapping
-    public ResponseEntity<Void> healtcheck() {
+    public ResponseEntity<Void> alive() {
         return ResponseEntity.status(200).build();
     }
 }

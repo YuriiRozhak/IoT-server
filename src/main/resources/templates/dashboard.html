@@ -32,45 +32,49 @@
 <a href="/settings">⚙️ Configure Sensor Settings</a> <!-- Link to settings page -->
 
 <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            loadSensors();
-            setInterval(updateSensorDataTable, 5000); // Refresh sensor data every 5 seconds
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+        loadSensors();
+        setInterval(updateDashboardData, 5000); // Refresh sensor data every 5 seconds
+});
 
-        function loadSensors() {
-            fetch("/sensor/all")
-                .then(response => response.json())
-                .then(data => {
-                    const dropdown = document.getElementById("sensorDropdown");
-                    dropdown.innerHTML = "";
+    function loadSensors() {
+        fetch("/sensor/all")
+            .then(response => response.json())
+            .then(data => {
+                const dropdown = document.getElementById("sensorDropdown");
+                const selectedValue = dropdown.value; // Preserve current selection
 
-                    if (data.length === 0) {
-                        console.error("No sensors found.");
-                        return;
-                    }
+                dropdown.innerHTML = ""; // Clear previous options
 
-                    data.forEach(sensor => {
-                        let option = document.createElement("option");
-                        option.value = sensor.id;
-                        option.textContent = sensor.type;
-                        dropdown.appendChild(option);
-                    });
+                if (data.length === 0) {
+                    console.error("No sensors found.");
+                    return;
+                }
 
-                    dropdown.value = data[0].id; // Select first sensor
-                    updateSensorDataTable();
-                })
-                .catch(error => console.error("Error fetching sensors:", error));
-        }
+                data.forEach(sensor => {
+                    let option = document.createElement("option");
+                    option.value = sensor.id;
+                    option.textContent = sensor.type;
+                    dropdown.appendChild(option);
+                });
 
-        function updateSensorDataTable() {
-            const sensorId = document.getElementById("sensorDropdown").value;
-            if (!sensorId) return;
+                // Restore previous selection or default to the first sensor
+                dropdown.value = selectedValue && data.some(s => s.id == selectedValue) ? selectedValue : data[0].id;
 
-            fetch(`/data/all/${sensorId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const table = document.getElementById("sensorDataTable");
-                    table.innerHTML = "<tr><th>Value</th><th>Timestamp</th></tr>"; // Reset table headers
+                updateSensorDataTable();
+            })
+            .catch(error => console.error("Error fetching sensors:", error));
+    }
+
+    function updateSensorDataTable() {
+        const sensorId = document.getElementById("sensorDropdown").value;
+        if (!sensorId) return;
+
+        fetch(`/data/all/${sensorId}`)
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById("sensorDataTable");
+                table.innerHTML = "<tr><th>Value</th><th>Timestamp</th></tr>"; // Reset table headers
 
                     data.forEach(entry => {
                         let row = document.createElement("tr");
@@ -80,6 +84,14 @@
                 })
                 .catch(error => console.error("Error updating sensor data table:", error));
         }
+
+        function updateDashboardData() {
+            updateSensorDataTable();
+            reloadDropdownOnNewSensor();
+        }
+
+
+
     </script>
 </body>
 </html>
