@@ -20,6 +20,12 @@ public class SensorDataController {
         return sensorDataService.addSensorData(data);
     }
 
+    @PostMapping("/add/all")
+    public List<SensorData> addListSensorData(@RequestBody List<SensorData> data) {
+
+        return sensorDataService.addAllSensorData(data);
+    }
+
     @GetMapping("/all")
     public List<SensorData> getAllSensorData() {
         return sensorDataService.getAllSensorData();

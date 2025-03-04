@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -35,38 +34,23 @@ public class SensorDataService {
 
 
     public SensorData addSensorData(SensorData data) {
-        Sensor sensor = Optional.ofNullable(data.getSensor())
-                .map(Sensor::getType)
-                .map(sensorRepository::findByType)
-                .orElse(null);
-        if (Objects.isNull(sensor)) {
-            sensor = new Sensor();
-            sensor.setType(data.getSensor().getType());
-            sensor.setDescription("Auto-created sensor for " + data.getSensor().getType());
-            sensor = sensorRepository.save(sensor);
-            SensorSettings defaultSettings = SensorSettings.createDefaultSettings(defaultMaxRecords);
-            defaultSettings.setSensor(sensor);
-            sensorSettingsRepository.save(defaultSettings);
-        }
+        final Sensor sensor = getSensor(data);
 
         // Create and save SensorData
-        SensorData sensorData = new SensorData();
+        final SensorData sensorData = new SensorData();
         sensorData.setSensor(sensor);
         sensorData.setValue(data.getValue());
         sensorData.setTimestamp(data.getTimestamp() != null ? data.getTimestamp() : LocalDateTime.now());
 
-        SensorData save = sensorDataRepository.save(sensorData);
+        final SensorData savedSensorData = sensorDataRepository.save(sensorData);
 
-        long count = sensorDataRepository.countBySensor_Id(save.getSensor().getId());
-        long MAX_RECORDS = Optional.ofNullable(sensorSettingsRepository.findBySensor(save.getSensor()))
-                .map(SensorSettings::getMaxRecordsStored)
-                .orElse(defaultMaxRecords);  // Keep only the latest 1000 records
+        trimDbOnLimitExceed(savedSensorData.getSensor());
 
-        if (count > MAX_RECORDS) {
-            sensorDataRepository.deleteOldestEntries(count - MAX_RECORDS, save.getSensor().getId());
-        }
+        return savedSensorData;
+    }
 
-        return save;
+    public List<SensorData> addAllSensorData(List<SensorData> sensorDataList) {
+        return sensorDataList.stream().map(this::addSensorData).toList();
     }
 
     public List<SensorData> getAllSensorData() {
@@ -75,5 +59,33 @@ public class SensorDataService {
 
     public List<SensorData> getAllSensorDataBySensorType(Long sensorId) {
         return sensorDataRepository.getAllBySensor_Id(sensorId);
+    }
+
+    private Sensor getSensor(SensorData data) {
+        return Optional.ofNullable(data.getSensor())
+                .map(Sensor::getType)
+                .map(sensorRepository::findByType)
+                .orElseGet(() -> {
+                    Sensor newSensor = new Sensor();
+                    newSensor.setType(data.getSensor().getType());
+                    newSensor.setDescription("Auto-created newSensor for " + data.getSensor().getType());
+                    newSensor = sensorRepository.save(newSensor);
+                    SensorSettings defaultSettings = SensorSettings.createDefaultSettings(defaultMaxRecords);
+                    defaultSettings.setSensor(newSensor);
+                    sensorSettingsRepository.save(defaultSettings);
+                    return newSensor;
+                });
+
+    }
+
+    private void trimDbOnLimitExceed(Sensor sensor) {
+        long count = sensorDataRepository.countBySensor_Id(sensor.getId());
+        long MAX_RECORDS = Optional.ofNullable(sensorSettingsRepository.findBySensor(sensor))
+                .map(SensorSettings::getMaxRecordsStored)
+                .orElse(defaultMaxRecords);  // Keep only the latest 1000 records
+
+        if (count > MAX_RECORDS) {
+            sensorDataRepository.deleteOldestEntries(count - MAX_RECORDS, sensor.getId());
+        }
     }
 }
