@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface SensorSettingsRepository extends JpaRepository<SensorSettings, Long> {
     SensorSettings findBySensor(Sensor sensor);
     SensorSettings findBySensor_Id(Long sensorId);
+
+    void deleteBySensor_Id(Long id);
 }

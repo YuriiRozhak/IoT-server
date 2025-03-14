@@ -29,4 +29,5 @@ public class SensorSettingController {
     public List<SensorSettings> getAllSettings() {
         return sensorSettingsService.getAllSettings();
     }
+
 }

@@ -12,28 +12,31 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SensorSettingsService {
 
-    private final SensorSettingsRepository repository;
     private final SensorSettingsRepository sensorSettingsRepository;
 
 
     public SensorSettings setSettings(SensorSettings sensorSettings) {
-        SensorSettings existing = repository.findBySensor_Id(sensorSettings.getSensor().getId());
+        SensorSettings existing = sensorSettingsRepository.findBySensor_Id(sensorSettings.getSensor().getId());
         return Optional.ofNullable(existing).map(ex -> {
                     ex.setMaxValue(sensorSettings.getMaxValue());
                     ex.setMinValue(sensorSettings.getMinValue());
                     ex.setMaxRecordsStored(sensorSettings.getMaxRecordsStored());
                     return ex;
                 }).map(sensorSettingsRepository::save)
-                .orElseGet(() -> repository.save(sensorSettings));
+                .orElseGet(() -> sensorSettingsRepository.save(sensorSettings));
     }
 
 
     public SensorSettings getSettings(long sensorId) {
-        return repository.findBySensor_Id(sensorId);
+        return sensorSettingsRepository.findBySensor_Id(sensorId);
     }
 
 
     public List<SensorSettings> getAllSettings() {
-        return repository.findAll();
+        return sensorSettingsRepository.findAll();
+    }
+
+    public void deleteBySensorId(Long id) {
+        sensorSettingsRepository.deleteBySensor_Id(id);
     }
 }

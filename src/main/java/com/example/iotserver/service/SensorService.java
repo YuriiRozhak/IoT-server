@@ -15,4 +15,8 @@ public class SensorService {
     public List<Sensor> getAllSensors() {
         return sensorRepository.findAll();
     }
+
+    public void deleteBySensorId(Long id) {
+        sensorRepository.deleteById(id);
+    }
 }

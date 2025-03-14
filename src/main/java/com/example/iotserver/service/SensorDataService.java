@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,5 +88,22 @@ public class SensorDataService {
         if (count > MAX_RECORDS) {
             sensorDataRepository.deleteOldestEntries(count - MAX_RECORDS, sensor.getId());
         }
+    }
+
+    public List<SensorData> getSensorDataByTimeRange(Long sensorId, String fromTime, String toTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        LocalDateTime from = LocalDateTime.parse(fromTime, formatter);
+        LocalDateTime to = LocalDateTime.parse(toTime, formatter);
+        return sensorDataRepository.getAllBySensor_IdAndTimestampBetween(sensorId, from, to);
+    }
+
+    public void deleteAllSensorDataBySensorType(Long sensorId) {
+        sensorDataRepository.deleteAllBySensor_Id(sensorId);
+    }
+
+    public List<SensorData> getAllSensorDataForLastMinutes(Long minutes) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime from = now.minusMinutes(minutes);
+        return sensorDataRepository.getAllByTimestampBetween(from, now);
     }
 }
