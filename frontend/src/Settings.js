@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
           const [formValues, setFormValues] = useState({ minValue: '', maxValue: '', maxRecordsStored: '' });
 
           useEffect(() => {
-            fetch("http://localhost:8080/settings/all")
+            fetch("/settings/all")
               .then(response => response.json())
               .then(data => setSettings(data))
               .catch(error => console.error("Error fetching settings:", error));

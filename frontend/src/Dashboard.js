@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
         const [toTime, setToTime] = useState('now');
 
         useEffect(() => {
-          fetch("http://localhost:8080/sensor/all")
+          fetch("/sensor/all")
             .then(response => response.json())
             .then(data => setSensors(data))
             .catch(error => console.error("Error fetching sensors:", error));
@@ -37,7 +37,7 @@ import React, { useEffect, useState } from "react";
               sensors.forEach(sensor => {
                 const to = toTime === 'now' ? getLocalTimeString() : toTime;
                 const from = fromTime || new Date(0).toISOString(); // Default to epoch if fromTime is empty
-                fetch(`http://localhost:8080/data/all/${sensor.id}/range?from=${from}&to=${to}`)
+                fetch(`/data/all/${sensor.id}/range?from=${from}&to=${to}`)
                   .then(response => response.json())
                   .then(data => setSensorData(prevData => {
                     const newData = prevData.filter(d => d.sensorId !== sensor.id);

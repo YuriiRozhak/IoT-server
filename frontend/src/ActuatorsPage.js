@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react';
                 const fetchActuators = async () => {
                   setIsLoading(true);
                   try {
-                    const response = await fetch("http://localhost:8080/actuator/all");
+                    const response = await fetch("/actuator/all");
                     const data = await response.json();
                     setActuators(data);
                   } catch (error) {
@@ -31,7 +31,7 @@ import React, { useState, useEffect } from 'react';
               const handleDelete = async (id) => {
                 if (window.confirm('Are you sure you want to delete this actuator?')) {
                   try {
-                    await fetch(`http://localhost:8080/actuator/${id}`, { method: 'DELETE' });
+                    await fetch(`/actuator/${id}`, { method: 'DELETE' });
                     setActuators(actuators.filter(actuator => actuator.id !== id));
                   } catch (error) {
                     console.error('Error deleting actuator:', error);
@@ -47,7 +47,7 @@ import React, { useState, useEffect } from 'react';
               const handleAddActuator = async (e) => {
                 e.preventDefault();
                 try {
-                  const response = await fetch('http://localhost:8080/actuator/add', {
+                  const response = await fetch('/actuator/add', {
                     method: 'POST',
                     headers: {
                       'Content-Type': 'application/json'
