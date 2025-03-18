@@ -20,7 +20,8 @@ public class Actuator {
 
     private String name;        // "DHT22", "MQ-3", "MQ-135"
     private String description; // Optional details about the sensor
-
+    private short pinIn;          // GPIO Input pin number
+    private short pinOut;          // GPIO Output pin number
     private boolean state; // true or false
 
 }
