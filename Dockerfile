@@ -6,9 +6,11 @@ RUN npm install && npm run build
 
 # 2️⃣ Build Spring Boot Backend
 FROM maven:3.8.4-openjdk-17 AS backend-build
+ARG API_KEY
 WORKDIR /app
 COPY --from=frontend-build /app/build /app/src/main/resources/static/
 COPY . /app
+RUN sed -i "s/API-KEY/${API_KEY}/g" /app/src/main/resources/application.properties
 RUN mvn package -DskipTests
 
 # 3️⃣ Run the Application

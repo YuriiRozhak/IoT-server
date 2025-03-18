@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 @Component
 public class WeatherDataScheduler {
 
@@ -25,7 +27,7 @@ public class WeatherDataScheduler {
         this.weatherApiKey = weatherApiKey;
     }
 
-    @Scheduled(fixedRate = 3600000) // 1 hour in milliseconds
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS) // 1 hour in milliseconds
     public void fetchAndStoreWeatherData() {
         WeatherData weatherData = weatherApiRepository.getCurrentWeather(weatherApiKey, location);
         if (weatherData != null) {
