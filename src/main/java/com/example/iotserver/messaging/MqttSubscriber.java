@@ -2,9 +2,11 @@ package com.example.iotserver.messaging;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(value = "mosqito.local.subscriber", havingValue = "true")
 public class MqttSubscriber {
     private static final String BROKER = "tcp://mosquitto:1883"; // Use the Docker container name
     private static final String CLIENT_ID = "SpringBootSubscriber";

@@ -16,6 +16,9 @@ RUN mvn package -DskipTests
 # 3️⃣ Run the Application
 FROM openjdk:17-jdk-slim
 WORKDIR /app
+
+# Copy the application JAR
 COPY --from=backend-build /app/target/*.jar /app/app.jar
+
 EXPOSE 8080
 CMD ["java", "-jar", "/app/app.jar"]

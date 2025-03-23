@@ -4,12 +4,14 @@ import com.example.iotserver.model.weather.WeatherData;
 import com.example.iotserver.repository.WeatherApiRepository;
 import com.example.iotserver.service.WeatherDataService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
 @Component
+@ConditionalOnProperty(name = "openweather.api.enabled", havingValue = "true")
 public class WeatherDataScheduler {
 
     private final WeatherDataService weatherDataService;
@@ -29,6 +31,7 @@ public class WeatherDataScheduler {
 
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS) // 1 hour in milliseconds
     public void fetchAndStoreWeatherData() {
+        System.out.println("weather-api-key: " + weatherApiKey);
         WeatherData weatherData = weatherApiRepository.getCurrentWeather(weatherApiKey, location);
         if (weatherData != null) {
             weatherDataService.saveWeatherData(weatherData);
