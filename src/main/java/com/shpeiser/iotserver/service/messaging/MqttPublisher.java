@@ -34,4 +34,5 @@ public class MqttPublisher {
             e.printStackTrace();
         }
     }
+
 }

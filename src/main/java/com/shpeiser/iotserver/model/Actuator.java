@@ -1,10 +1,9 @@
 package com.shpeiser.iotserver.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,10 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Actuator {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;        // "light", "fan", "buzzer"
@@ -23,7 +22,6 @@ public class Actuator {
     private short pinIn;          // GPIO Input pin number
     private short pinOut;          // GPIO Output pin number
     private boolean state;// true or false
-    private boolean scenarioState;// true or false
 
 
 }

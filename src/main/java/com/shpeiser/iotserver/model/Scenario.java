@@ -26,7 +26,8 @@ public class Scenario {
 
     @OneToMany
     @JoinColumn(name = "scenario_id")
-    private List<SensorThreshold> sensorThresholds;
+    private List<SensorComparator> sensorComparators;
 
-    private boolean scenarioState;// true o
+
+    private boolean active;
 }

@@ -1,29 +1,27 @@
 package com.shpeiser.iotserver.service;
 
+import com.shpeiser.iotserver.model.Sensor;
 import com.shpeiser.iotserver.model.SensorSettings;
+import com.shpeiser.iotserver.repository.SensorRepository;
 import com.shpeiser.iotserver.repository.SensorSettingsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class SensorSettingsService {
 
     private final SensorSettingsRepository sensorSettingsRepository;
+    private final SensorRepository sensorRepository;
 
 
     public SensorSettings setSettings(SensorSettings sensorSettings) {
-        SensorSettings existing = sensorSettingsRepository.findBySensor_Id(sensorSettings.getSensor().getId());
-        return Optional.ofNullable(existing).map(ex -> {
-                    ex.setMaxValue(sensorSettings.getMaxValue());
-                    ex.setMinValue(sensorSettings.getMinValue());
-                    ex.setMaxRecordsStored(sensorSettings.getMaxRecordsStored());
-                    return ex;
-                }).map(sensorSettingsRepository::save)
-                .orElseGet(() -> sensorSettingsRepository.save(sensorSettings));
+        Sensor sensor = sensorRepository.findById(sensorSettings.getSensor().getId())
+                .orElseThrow(() -> new RuntimeException("Sensor not found"));
+        sensorSettings.setSensor(sensor);
+        return sensorSettingsRepository.save(sensorSettings);
     }
 
 

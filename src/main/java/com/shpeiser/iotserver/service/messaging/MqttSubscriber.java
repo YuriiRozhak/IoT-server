@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class MqttSubscriber {
     private static final String BROKER = "tcp://mosquitto:1883"; // Use the Docker container name
     private static final String CLIENT_ID = "SpringBootSubscriber";
-    private static final String TOPIC = "actuator/state";
+    private static final String[] TOPICS = {"LED", "Buzzer", "fan"};
 
     public MqttSubscriber() {
         try {
@@ -36,7 +36,7 @@ public class MqttSubscriber {
             });
 
             mqttClient.connect(options);
-            mqttClient.subscribe(TOPIC);
+            mqttClient.subscribe(TOPICS);
         } catch (MqttException e) {
             e.printStackTrace();
         }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SensorThreshold {
+public class SensorComparator {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,7 +18,7 @@ public class SensorThreshold {
     @ManyToOne
     private Sensor sensor;
 
-    private Double higherThan;
-    private Double lowerThan;
+    private String comparator; //"=","!=",">","<",">=","<="
+    private Double value;
 
 }
