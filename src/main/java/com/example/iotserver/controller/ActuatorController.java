@@ -28,4 +28,20 @@ public class ActuatorController {
     public Actuator saveActuator(@RequestBody Actuator actuator) {
         return actuatorService.save(actuator);
     }
+
+    @PostMapping("/enable/{id}")
+    public Actuator enableActuator(@PathVariable(name = "id") Long id) {
+        return actuatorService.enableActuator(id);
+    }
+
+    @PostMapping("/disable/{id}")
+    public Actuator disableActuator(@PathVariable(name = "id") Long id) {
+        return actuatorService.disableActuator(id);
+    }
+
+    @PostMapping("/state/{id}/{enabled}")
+    public Actuator saveActuatorState(@PathVariable(name = "id") Long id, @PathVariable(name = "enabled") Boolean enabled) {
+        return actuatorService.saveActuatorState(id, enabled);
+    }
+
 }

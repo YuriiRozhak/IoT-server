@@ -1,6 +1,6 @@
-package com.example.iotserver.controller;
+package com.example.iotserver.controller.messaging;
 
-import com.example.iotserver.messaging.MqttPublisherService;
+import com.example.iotserver.service.messaging.MqttPublisherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;

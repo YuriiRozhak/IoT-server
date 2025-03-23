@@ -1,18 +1,17 @@
 package com.example.iotserver.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Actuator {
+public class Scenario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,10 +19,14 @@ public class Actuator {
 
     private String name;        // "light", "fan", "buzzer"
     private String description; // Optional details about the rule
-    private short pinIn;          // GPIO Input pin number
-    private short pinOut;          // GPIO Output pin number
-    private boolean state;// true or false
-    private boolean scenarioState;// true or false
 
+    @OneToMany
+    @JoinColumn(name = "scenario_id")
+    private List<Actuator> actuators;
 
+    @OneToMany
+    @JoinColumn(name = "scenario_id")
+    private List<SensorThreshold> sensorThresholds;
+
+    private boolean scenarioState;// true o
 }

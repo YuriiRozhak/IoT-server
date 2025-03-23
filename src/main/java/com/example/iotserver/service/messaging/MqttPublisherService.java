@@ -1,4 +1,4 @@
-package com.example.iotserver.messaging;
+package com.example.iotserver.service.messaging;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

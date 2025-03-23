@@ -1,4 +1,4 @@
-package com.example.iotserver.messaging;
+package com.example.iotserver.service.messaging;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
