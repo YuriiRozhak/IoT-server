@@ -49,27 +49,27 @@ public class ScenarioService {
 
         allScenarios.stream()
                 .filter(Scenario::isActive)
-                .forEach(scenario -> checkScenationOverData(sensorData, scenario));
+                .forEach(scenario -> checkScenarioOverData(sensorData, scenario));
 
     }
 
-    private void checkScenationOverData(Collection<SensorData> sensorData, Scenario scenario) {
+    private void checkScenarioOverData(Collection<SensorData> sensorData, Scenario scenario) {
         final List<SensorComparator> sensorComparators = scenario.getSensorComparators();
         if (!(CollectionUtils.isEmpty(scenario.getActuators()) || CollectionUtils.isEmpty(sensorComparators)
                 || CollectionUtils.isEmpty(sensorData))) {
             final Map<Long, List<SensorComparator>> sensorThresholdsBySensorId = sensorComparators.stream()
                     .collect(Collectors.groupingBy(st -> st.getSensor().getId()));
-            sensorData.forEach(sd -> {
+            boolean anyMatchCondition = sensorData.stream().anyMatch(sd -> {
                 Long dataSensorId = sd.getSensor().getId();
                 List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
-                verifyThresholdsOverData(th, sd, scenario.getActuators());
+                return verifyThresholdsOverData(th, sd, scenario.getActuators());
             });
+
+            sentCommandToActuators(scenario.getActuators(), anyMatchCondition);
         }
     }
 
-    private void verifyThresholdsOverData(List<SensorComparator> th, SensorData sd, List<Actuator> actuators) {
-        boolean anyMatchCondition = th.stream()
-                .anyMatch(sensorThreshold -> verifyThresholdsOverData(sensorThreshold, sd));
+    private void sentCommandToActuators(List<Actuator> actuators, boolean anyMatchCondition) {
         if (anyMatchCondition) {
             actuators.forEach(actuator ->
                     mqttPublisherService.publishActuatorState(actuator.getName(), ActuatorState.ON));
@@ -77,12 +77,14 @@ public class ScenarioService {
             actuators.forEach(actuator ->
                     mqttPublisherService.publishActuatorState(actuator.getName(), ActuatorState.OFF));
         }
+    }
 
+    private boolean verifyThresholdsOverData(List<SensorComparator> th, SensorData sd, List<Actuator> actuators) {
+        return th.stream().anyMatch(sensorThreshold -> verifyThresholdsOverData(sensorThreshold, sd));
     }
 
     private boolean verifyThresholdsOverData(SensorComparator sensorComparator, SensorData sd) {
         return checkCondition(sensorComparator.getValue(), sd.getValue(), sensorComparator.getComparator());
-
     }
 
     private boolean checkCondition(@NotNull Double thresholdValue, @NotNull double sensorValue, String comparator) {
