@@ -141,10 +141,14 @@ import React, { useEffect, useState } from "react";
                   <div className="col-md-4">
                     <div className="form-group">
                       <label htmlFor="toTime">To: </label>
-                      <select id="toTime" className="form-control" value={toTime} onChange={handleToTimeChange}>
-                        <option value="now">Now</option>
-                        <option value={new Date().toISOString()}>{new Date().toLocaleString()}</option>
-                      </select>
+                        <input type="datetime-local" id="fromTime" className="form-control" value={toTime} onChange={handleToTimeChange} />
+                        <button
+                          id="toTime"
+                          className={`form-control ${toTime === 'now' ? 'btn-primary border-success' : 'btn-secondary'}`}
+                          onClick={() => setToTime('now')}
+                        >
+                          Now
+                        </button>
                     </div>
                   </div>
                 </div>
