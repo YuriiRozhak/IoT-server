@@ -19,7 +19,8 @@ import React, { useEffect, useState } from "react";
                         const [sensorData, setSensorData] = useState([]);
                         const [sensors, setSensors] = useState([]);
                         const [updatePeriod, setUpdatePeriod] = useState(5000);
-                        const [fromTime, setFromTime] = useState('');
+                        const oneDayBeforeNow = new Date(Date.now() - 86400000).toISOString().slice(0, 16);
+                        const [fromTime, setFromTime] = useState(oneDayBeforeNow);
                         const [toTime, setToTime] = useState('now');
                         const [expandedChart, setExpandedChart] = useState(null);
 
@@ -90,42 +91,50 @@ import React, { useEffect, useState } from "react";
                         };
 
                         return (
-                          <div className="container mt-4">
-                            <h1 className="mb-4">Sensor Dashboard</h1>
-                            <div className="form-group">
-                              <label htmlFor="updatePeriod">Update Period: </label>
-                              <select id="updatePeriod" className="form-control" value={updatePeriod} onChange={handleUpdatePeriodChange}>
-                                <option value={1000}>1 second</option>
-                                <option value={5000}>5 seconds</option>
-                                <option value={10000}>10 seconds</option>
-                                <option value={30000}>30 seconds</option>
-                                <option value={60000}>1 minute</option>
-                              </select>
-                            </div>
-                            <div className="form-group">
-                              <label htmlFor="fromTime">From: </label>
-                              <input type="datetime-local" id="fromTime" className="form-control" value={fromTime} onChange={handleFromTimeChange} />
-                            </div>
-                            <div className="form-group">
-                              <label htmlFor="toTime">To: </label>
-                              <select id="toTime" className="form-control" value={toTime} onChange={handleToTimeChange}>
-                                <option value="now">Now</option>
-                                <option value={new Date().toISOString()}>{new Date().toLocaleString()}</option>
-                              </select>
-                            </div>
-                            <div className="row">
-                              {sensors.map(sensor => (
-                                <div key={sensor.id} className={`col-md-${expandedChart === sensor.id ? '12' : '6'} mb-4`}>
-                                  <div className="card" onClick={() => handleChartClick(sensor.id)}>
-                                    <div className="card-body">
-                                      <h5 className="card-title">Sensor {sensor.type}</h5>
-                                      <Line data={getChartData(sensor.id)} />
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
+                    <div className="container mt-4">
+                      <h1 className="mb-4">Sensor Dashboard</h1>
+                      <div className="row">
+                        <div className="col-md-4">
+                          <div className="form-group">
+                            <label htmlFor="updatePeriod">Update Period: </label>
+                            <select id="updatePeriod" className="form-control" value={updatePeriod} onChange={handleUpdatePeriodChange}>
+                              <option value={1000}>1 second</option>
+                              <option value={5000}>5 seconds</option>
+                              <option value={10000}>10 seconds</option>
+                              <option value={30000}>30 seconds</option>
+                              <option value={60000}>1 minute</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="form-group">
+                            <label htmlFor="fromTime">From: </label>
+                            <input type="datetime-local" id="fromTime" className="form-control" value={fromTime} onChange={handleFromTimeChange} />
+                          </div>
+                        </div>
+                        <div className="col-md-4">
+                          <div className="form-group">
+                            <label htmlFor="toTime">To: </label>
+                            <select id="toTime" className="form-control" value={toTime} onChange={handleToTimeChange}>
+                              <option value="now">Now</option>
+                              <option value={new Date().toISOString()}>{new Date().toLocaleString()}</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        {sensors.map(sensor => (
+                          <div key={sensor.id} className={`col-md-${expandedChart === sensor.id ? '12' : '6'} mb-4`}>
+                            <div className="card" onClick={() => handleChartClick(sensor.id)}>
+                              <div className="card-body">
+                                <h5 className="card-title">Sensor {sensor.type}</h5>
+                                <Line data={getChartData(sensor.id)} />
+                              </div>
                             </div>
                           </div>
+                        ))}
+                      </div>
+                    </div>
                         );
                       }
 
