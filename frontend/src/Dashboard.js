@@ -141,7 +141,7 @@ import React, { useEffect, useState } from "react";
                   <div className="col-md-4">
                     <div className="form-group">
                       <label htmlFor="toTime">To: </label>
-                        <input type="datetime-local" id="fromTime" className="form-control" value={toTime} onChange={handleToTimeChange} />
+                        <input type="datetime-local" id="fromTime" className="form-control" value={toTime} onChange={handleToTimeChange} min={fromTime} />
                         <button
                           id="toTime"
                           className={`form-control ${toTime === 'now' ? 'btn-primary border-success' : 'btn-secondary'}`}
