@@ -29,4 +29,8 @@ public class SensorData {
     @Column(columnDefinition = "TEXT")
     @Convert(converter = LocalDateTimeConverter.class)
     private LocalDateTime timestamp;
+
+    public static SensorData asFromSensor(double value, String sensorType, String sensorDescription) {
+        return new SensorData(null, new Sensor(null, sensorType, sensorDescription), value, LocalDateTime.now());
+    }
 }

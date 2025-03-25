@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,19 +27,23 @@ public class ActuatorService {
     }
 
     public Actuator enableActuator(Long id) {
-        Optional<Actuator> byId = actuatorRepository.findById(id);
-        return byId.map(actuator -> {
+        return actuatorRepository.findById(id).map(actuator -> {
             mqttPublisherService.publish(actuator.getName(), "ON");
             return actuator;
         }).orElseThrow(() -> new RuntimeException("Actuator not found"));
     }
 
     public Actuator disableActuator(Long id) {
-        Optional<Actuator> byId = actuatorRepository.findById(id);
-        return byId.map(actuator -> {
+        return actuatorRepository.findById(id).map(actuator -> {
             mqttPublisherService.publish(actuator.getName(), "OFF");
             return actuator;
         }).orElseThrow(() -> new RuntimeException("Actuator not found"));
+    }
+
+    public void switchState(Long id) {
+        actuatorRepository.findById(id)
+                .map(Actuator::isState)
+                .map(active -> active ? disableActuator(id) : enableActuator(id));
     }
 
     public Actuator saveActuatorState(Long id, Boolean enabled) {

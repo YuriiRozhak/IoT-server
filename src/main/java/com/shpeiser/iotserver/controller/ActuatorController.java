@@ -39,6 +39,11 @@ public class ActuatorController {
         return actuatorService.disableActuator(id);
     }
 
+    @PostMapping("/switchstate/{id}")
+    public void switchActuatorState(@PathVariable(name = "id") Long id) {
+        actuatorService.switchState(id);
+    }
+
     @PostMapping("/state/{id}/{enabled}")
     public Actuator saveActuatorState(@PathVariable(name = "id") Long id, @PathVariable(name = "enabled") Boolean enabled) {
         return actuatorService.saveActuatorState(id, enabled);
