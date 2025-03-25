@@ -20,8 +20,6 @@ services:
       dockerfile: Dockerfile
       args:
         - API_KEY=${API_KEY}
-        - BROKER_URL=${BROKER_URL}
-        - CLIENT_ID=${CLIENT_ID}
     depends_on:
       - mosquitto
     ports:

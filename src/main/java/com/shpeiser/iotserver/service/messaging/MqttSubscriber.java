@@ -2,19 +2,19 @@ package com.shpeiser.iotserver.service.messaging;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(value = "mosqito.local.subscriber", havingValue = "true")
+@ConditionalOnProperty(value = "mosquitto.local.subscriber", havingValue = "true")
 public class MqttSubscriber {
+    private static final String BROKER = "tcp://mosquitto:1883"; // Use the Docker container name
+    private static final String CLIENT_ID = "SpringBootSubscriber";
     private static final String[] TOPICS = {"LED", "Buzzer", "fan"};
 
-    public MqttSubscriber(@Value("${mosquito.broker.url}") String broker,
-                          @Value("${mosquito.client.id}") String clientId) {
+    public MqttSubscriber() {
         try {
-            MqttClient mqttClient = new MqttClient(broker, clientId, new MemoryPersistence());
+            MqttClient mqttClient = new MqttClient(BROKER, CLIENT_ID, new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
             mqttClient.setCallback(new MqttCallback() {

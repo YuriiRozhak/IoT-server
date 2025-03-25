@@ -7,14 +7,10 @@ RUN npm install && npm run build
 # 2️⃣ Build Spring Boot Backend
 FROM maven:3.8.4-openjdk-17 AS backend-build
 ARG API_KEY
-ARG CLIENT_ID
-ARG BROKER_URL
 WORKDIR /app
 COPY --from=frontend-build /app/build /app/src/main/resources/static/
 COPY . /app
 RUN sed -i "s/API_KEY/${API_KEY}/g" /app/src/main/resources/application.properties
-RUN sed -i "s#BROKER_URL#${BROKER_URL}#g" /app/src/main/resources/application.properties
-RUN sed -i "s/CLIENT_ID/${CLIENT_ID}/g" /app/src/main/resources/application.properties
 RUN mvn package -DskipTests
 
 # 3️⃣ Run the Application

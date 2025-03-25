@@ -1,22 +1,23 @@
 package com.shpeiser.iotserver.service.messaging;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class MqttPublisher {
-
+    private static final String BROKER = "tcp://mosquitto:1883"; // Use the Docker container name
+    private static final String CLIENT_ID = "SpringBootPublisher";
     private MqttClient mqttClient;
 
-    public MqttPublisher(@Value("${mosquito.broker.url}") String broker,
-                         @Value("${mosquito.client.id}") String clientId) {
+    public MqttPublisher() {
         try {
-            mqttClient = new MqttClient(broker, clientId, new MemoryPersistence());
+            mqttClient = new MqttClient(BROKER, CLIENT_ID, new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
             options.setCleanSession(true);
             mqttClient.connect(options);
