@@ -59,13 +59,35 @@ public class ScenarioService {
                 || CollectionUtils.isEmpty(sensorData))) {
             final Map<Long, List<SensorComparator>> sensorThresholdsBySensorId = sensorComparators.stream()
                     .collect(Collectors.groupingBy(st -> st.getSensor().getId()));
-            boolean anyMatchCondition = sensorData.stream().anyMatch(sd -> {
-                Long dataSensorId = sd.getSensor().getId();
-                List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
-                return verifyThresholdsOverData(th, sd, scenario.getActuators());
-            });
+            boolean actuatorsShouldBeActivated = shouldActuatorsBeActivated(sensorData, scenario, sensorThresholdsBySensorId);
+            sentCommandToActuators(scenario.getActuators(), actuatorsShouldBeActivated);
+        }
+    }
 
-            sentCommandToActuators(scenario.getActuators(), anyMatchCondition);
+    private boolean shouldActuatorsBeActivated(Collection<SensorData> sensorData,
+                                               Scenario scenario,
+                                               Map<Long, List<SensorComparator>> sensorThresholdsBySensorId) {
+        switch (scenario.getConditionType()) {
+            case ALL:
+                return sensorData.stream().allMatch(sd -> {
+                    Long dataSensorId = sd.getSensor().getId();
+                    List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
+                    return verifyThresholdsOverData(th, sd, scenario.getActuators());
+                });
+
+            case NONE:
+                return sensorData.stream().noneMatch(sd -> {
+                    Long dataSensorId = sd.getSensor().getId();
+                    List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
+                    return verifyThresholdsOverData(th, sd, scenario.getActuators());
+                });
+
+            default:
+                return sensorData.stream().anyMatch(sd -> {
+                    Long dataSensorId = sd.getSensor().getId();
+                    List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
+                    return verifyThresholdsOverData(th, sd, scenario.getActuators());
+                });
         }
     }
 
@@ -89,5 +111,14 @@ public class ScenarioService {
 
     private boolean checkCondition(@NotNull Double thresholdValue, @NotNull double sensorValue, String comparator) {
         return Comparator.getBySymbol(comparator).check(sensorValue, thresholdValue);
+    }
+
+    public Scenario switchState(Long id) {
+        return scenarioRepository.findById(id)
+                .map(scenario -> {
+                    scenario.setActive(!scenario.isActive());
+                    return scenarioRepository.save(scenario);
+                })
+                .orElseThrow(() -> new RuntimeException("Scenario not found"));
     }
 }

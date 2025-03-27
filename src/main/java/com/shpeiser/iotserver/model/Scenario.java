@@ -16,7 +16,6 @@ public class Scenario {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
     private String name;        // "light", "fan", "buzzer"
     private String description; // Optional details about the rule
 
@@ -27,6 +26,8 @@ public class Scenario {
     @OneToMany
     @JoinColumn(name = "scenario_id")
     private List<SensorComparator> sensorComparators;
+
+    private ConditionType conditionType;
 
 
     private boolean active;

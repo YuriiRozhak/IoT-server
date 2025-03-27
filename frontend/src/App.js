@@ -1,8 +1,10 @@
+// frontend/src/App.js
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Settings from "./Settings";
 import ActuatorsPage from "./ActuatorsPage";
+import ScenariosPage from "./ScenariosPage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -21,6 +23,9 @@ function App() {
             <li className="nav-item">
               <Link className="nav-link" to="/actuators">ActuatorsPage</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/scenarios">Scenarios</Link>
+            </li>
           </ul>
         </nav>
         <div className="flex-grow-1 p-3">
@@ -28,6 +33,7 @@ function App() {
             <Route exact path="/" element={<Dashboard />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/actuators" element={<ActuatorsPage />} />
+            <Route path="/scenarios" element={<ScenariosPage />} />
           </Routes>
         </div>
       </div>

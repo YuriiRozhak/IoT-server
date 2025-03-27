@@ -5,8 +5,6 @@ import 'chartjs-adapter-date-fns';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './common.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 function getLocalTimeString() {
   const now = new Date();
   return now.getFullYear() + "-" +
@@ -28,7 +26,7 @@ function Dashboard() {
   const [expandedChart, setExpandedChart] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/sensor/all`)
+    fetch(`/sensor/all`)
       .then(response => response.json())
       .then(data => {
         console.log("Fetched sensors:", data);
@@ -43,7 +41,7 @@ function Dashboard() {
         sensors.forEach(sensor => {
           const to = toTime === 'now' ? getLocalTimeString() : toTime;
           const from = fromTime || new Date(0).toISOString();
-          fetch(`${API_BASE_URL}/data/all/${sensor.id}/range?from=${from}&to=${to}`)
+          fetch(`/data/all/${sensor.id}/range?from=${from}&to=${to}`)
             .then(response => response.json())
             .then(data => {
               console.log(`Fetched data for sensor ${sensor.id}:`, data);

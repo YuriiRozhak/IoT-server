@@ -30,6 +30,11 @@ public class ScenarioController {
         return scenarioService.save(scenario);
     }
 
+    @PostMapping("/switchstate/{id}")
+    public Scenario switchState(@PathVariable(name = "id") Long id) {
+        return scenarioService.switchState(id);
+    }
+
     @GetMapping("/{id}")
     public Optional<Scenario> getScenarioById(@PathVariable(name = "id") Long id) {
         return scenarioService.getScenarioById(id);

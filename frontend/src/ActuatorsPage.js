@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './common.css';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 function ActuatorsPage() {
   const [actuators, setActuators] = useState([]);
   const [updatePeriod, setUpdatePeriod] = useState(5000); // Default to 5 seconds
@@ -14,7 +12,7 @@ function ActuatorsPage() {
     const fetchActuators = async () => {
      setIsLoading(true);
       try {
-        const response = await fetch(`${API_BASE_URL}/actuator/all`);
+        const response = await fetch(`/actuator/all`);
         const data = await response.json();
         setActuators(data);
       } catch (error) {
@@ -33,7 +31,7 @@ function ActuatorsPage() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this actuator?')) {
       try {
-        await fetch(`${API_BASE_URL}/actuator/${id}`, { method: 'DELETE' });
+        await fetch(`/actuator/${id}`, { method: 'DELETE' });
         setActuators(actuators.filter(actuator => actuator.id !== id));
       } catch (error) {
         console.error('Error deleting actuator:', error);
@@ -43,7 +41,7 @@ function ActuatorsPage() {
 
   const handleSwitchActuatorState    = async (id) => {
       try {
-        await fetch(`${API_BASE_URL}/actuator/switchstate/${id}`, { method: 'POST' });
+        await fetch(`/actuator/switchstate/${id}`, { method: 'POST' });
       } catch (error) {
         console.error('Error deleting actuator:', error);
       }
@@ -57,7 +55,7 @@ function ActuatorsPage() {
   const handleAddActuator = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_BASE_URL}/actuator/add`, {
+      const response = await fetch(`/actuator/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

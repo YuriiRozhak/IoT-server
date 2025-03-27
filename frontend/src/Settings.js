@@ -3,15 +3,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './common.css';
 import { FaCog, FaTrash } from 'react-icons/fa';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
 function Settings() {
   const [settings, setSettings] = useState([]);
   const [selectedSetting, setSelectedSetting] = useState(null);
   const [formValues, setFormValues] = useState({ minValue: '', maxValue: '', maxRecordsStored: '' });
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/settings/all`)
+    fetch(`/settings/all`)
       .then(response => response.json())
       .then(data => setSettings(data))
       .catch(error => console.error("Error fetching settings:", error));
@@ -33,7 +31,7 @@ function Settings() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch(`${API_BASE_URL}/settings/set`, {
+    fetch(`/settings/set`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -50,7 +48,7 @@ function Settings() {
 
   const handleDeleteClick = (id) => {
     if (window.confirm(`Do you really want to delete all data from sensor with id ${id}?`)) {
-      fetch(`${API_BASE_URL}/data/all/${id}`, {
+      fetch(`/data/all/${id}`, {
         method: "DELETE",
       })
         .then(() => {
