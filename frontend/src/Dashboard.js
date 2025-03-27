@@ -5,16 +5,18 @@ import 'chartjs-adapter-date-fns';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './common.css';
 
-function getLocalTimeString() {
-  const now = new Date();
-  return now.getFullYear() + "-" +
-    String(now.getMonth() + 1).padStart(2, '0') + "-" +
-    String(now.getDate()).padStart(2, '0') + "T" +
-    String(now.getHours()).padStart(2, '0') + ":" +
-    String(now.getMinutes()).padStart(2, '0') + ":" +
-    String(now.getSeconds()).padStart(2, '0') + "." +
-    String(now.getMilliseconds()).padStart(3, '0');
+
+function getLocalTimeStringPlusOffset(date) {
+  const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+  return localDate.getFullYear() + "-" +
+    String(localDate.getMonth() + 1).padStart(2, '0') + "-" +
+    String(localDate.getDate()).padStart(2, '0') + "T" +
+    String(localDate.getHours()).padStart(2, '0') + ":" +
+    String(localDate.getMinutes()).padStart(2, '0') + ":" +
+    String(localDate.getSeconds()).padStart(2, '0') + "." +
+    String(localDate.getMilliseconds()).padStart(3, '0');
 }
+
 
 function Dashboard() {
   const [sensorData, setSensorData] = useState([]);
@@ -39,8 +41,8 @@ function Dashboard() {
     const fetchData = () => {
       if (sensors.length > 0) {
         sensors.forEach(sensor => {
-          const to = toTime === 'now' ? getLocalTimeString() : toTime;
-          const from = fromTime || new Date(0).toISOString();
+          const to = toTime === 'now' ? getLocalTimeStringPlusOffset(new Date()) : getLocalTimeStringPlusOffset(new Date(toTime));
+          const from = getLocalTimeStringPlusOffset(new Date(fromTime)) || getLocalTimeStringPlusOffset(new Date(0));
           fetch(`/data/all/${sensor.id}/range?from=${from}&to=${to}`)
             .then(response => response.json())
             .then(data => {
@@ -65,7 +67,7 @@ function Dashboard() {
     if (!sensor) return { labels: [], datasets: [] };
 
     const data = sensor.data.map(entry => ({
-      x: new Date(entry.timestamp).getTime(),
+      x: new Date(new Date(entry.timestamp) - new Date().getTimezoneOffset() * 60000).getTime(),
       y: entry.value
     }));
 
