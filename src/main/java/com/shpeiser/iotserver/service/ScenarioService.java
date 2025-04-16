@@ -5,6 +5,7 @@ import com.shpeiser.iotserver.model.Comparator;
 import com.shpeiser.iotserver.repository.ActuatorRepository;
 import com.shpeiser.iotserver.repository.ScenarioRepository;
 import com.shpeiser.iotserver.repository.SensorComparatorRepository;
+import com.shpeiser.iotserver.repository.SensorRepository;
 import com.shpeiser.iotserver.service.messaging.MqttPublisherService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class ScenarioService {
     private final SensorComparatorRepository sensorComparatorRepository;
     private final ActuatorRepository actuatorRepository;
     private final MqttPublisherService mqttPublisherService;
+    private final SensorRepository sensorRepository;
 
     public List<Scenario> getAllScenarios() {
         return scenarioRepository.findAll();
@@ -32,11 +34,15 @@ public class ScenarioService {
 
     public Scenario save(Scenario scenario) {
         final List<Long> actuatorsIds = scenario.getActuators().stream().map(Actuator::getId).toList();
-        final List<Long> comparatorsIds = scenario.getSensorComparators().stream().map(SensorComparator::getId).toList();
         final List<Actuator> actuators = actuatorRepository.findAllById(actuatorsIds);
-        final List<SensorComparator> sensorComparators = sensorComparatorRepository.findAllById(comparatorsIds);
+        scenario.getSensorComparators()
+                .forEach(sensorComparator -> sensorComparator.setSensor(
+                        sensorRepository.findById(sensorComparator.getSensor().getId()).orElseThrow(() ->
+                                new RuntimeException("Sensor not found")))
+                );
+        final List<SensorComparator> savedSensorComparators = sensorComparatorRepository.saveAll(scenario.getSensorComparators());
         scenario.setActuators(actuators);
-        scenario.setSensorComparators(sensorComparators);
+        scenario.setSensorComparators(savedSensorComparators);
         return scenarioRepository.save(scenario);
     }
 
@@ -66,33 +72,31 @@ public class ScenarioService {
 
     private boolean shouldActuatorsBeActivated(Collection<SensorData> sensorData,
                                                Scenario scenario,
-                                               Map<Long, List<SensorComparator>> sensorThresholdsBySensorId) {
-        switch (scenario.getConditionType()) {
-            case ALL:
-                return sensorData.stream().allMatch(sd -> {
-                    Long dataSensorId = sd.getSensor().getId();
-                    List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
-                    return verifyThresholdsOverData(th, sd, scenario.getActuators());
-                });
-
-            case NONE:
-                return sensorData.stream().noneMatch(sd -> {
-                    Long dataSensorId = sd.getSensor().getId();
-                    List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
-                    return verifyThresholdsOverData(th, sd, scenario.getActuators());
-                });
-
-            default:
-                return sensorData.stream().anyMatch(sd -> {
-                    Long dataSensorId = sd.getSensor().getId();
-                    List<SensorComparator> th = sensorThresholdsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
-                    return verifyThresholdsOverData(th, sd, scenario.getActuators());
-                });
-        }
+                                               Map<Long, List<SensorComparator>> sensorComparatorsBySensorId) {
+        List<SensorData> sensorsFromScenario = sensorData.stream()
+                .filter(sd -> sensorComparatorsBySensorId.containsKey(sd.getSensor().getId()))
+                .toList();
+        return switch (scenario.getConditionType()) {
+            case ANY -> sensorsFromScenario.stream().anyMatch(sd -> {
+                Long dataSensorId = sd.getSensor().getId();
+                List<SensorComparator> comparators = sensorComparatorsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
+                return verifyThresholdsOverData(comparators, sd);
+            });
+            case NONE -> sensorsFromScenario.stream().noneMatch(sd -> {
+                Long dataSensorId = sd.getSensor().getId();
+                List<SensorComparator> comparators = sensorComparatorsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
+                return verifyThresholdsOverData(comparators, sd);
+            });
+            default -> sensorsFromScenario.stream().allMatch(sd -> {
+                Long dataSensorId = sd.getSensor().getId();
+                List<SensorComparator> comparators = sensorComparatorsBySensorId.getOrDefault(dataSensorId, Collections.emptyList());
+                return verifyThresholdsOverData(comparators, sd);
+            });
+        };
     }
 
-    private void sentCommandToActuators(List<Actuator> actuators, boolean anyMatchCondition) {
-        if (anyMatchCondition) {
+    private void sentCommandToActuators(List<Actuator> actuators, boolean actuatorCondition) {
+        if (actuatorCondition) {
             actuators.forEach(actuator ->
                     mqttPublisherService.publishActuatorState(actuator.getName(), ActuatorState.ON));
         } else {
@@ -101,7 +105,7 @@ public class ScenarioService {
         }
     }
 
-    private boolean verifyThresholdsOverData(List<SensorComparator> th, SensorData sd, List<Actuator> actuators) {
+    private boolean verifyThresholdsOverData(List<SensorComparator> th, SensorData sd) {
         return th.stream().anyMatch(sensorThreshold -> verifyThresholdsOverData(sensorThreshold, sd));
     }
 

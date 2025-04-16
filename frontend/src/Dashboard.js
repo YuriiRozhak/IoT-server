@@ -22,8 +22,8 @@ function Dashboard() {
   const [sensorData, setSensorData] = useState([]);
   const [sensors, setSensors] = useState([]);
   const [updatePeriod, setUpdatePeriod] = useState(5000);
-  const oneDayBeforeNow = new Date(Date.now() - 86400000).toISOString().slice(0, 16);
-  const [fromTime, setFromTime] = useState(oneDayBeforeNow);
+  const oneHourBeforeNow = new Date(Date.now() - 3600000).toISOString().slice(0, 16);
+  const [fromTime, setFromTime] = useState(oneHourBeforeNow);
   const [toTime, setToTime] = useState('now');
   const [expandedChart, setExpandedChart] = useState(null);
 

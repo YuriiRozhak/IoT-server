@@ -17,9 +17,9 @@ public class MqttPublisherService {
         return "Message sent to topic: " + topic;
     }
 
-    public String publishActuatorState(String topic, ActuatorState actuatorState) {
+    public void publishActuatorState(String topic, ActuatorState actuatorState) {
         mqttPublisher.publish(topic, actuatorState.toString());
-        return "State \"" + actuatorState + "\" sent to topic: \"" + topic + "\"";
+        log.info("State \"" + actuatorState + "\" sent to topic: \"" + topic + "\"");
     }
 
 }
